@@ -6,9 +6,11 @@ mod give_me_query;
 mod hello_world;
 
 use axum::{
+    http::Method,
     routing::{get, post},
     Router,
 };
+use tower_http::cors::CorsLayer;
 
 use self::{
     give_me_back::give_me_back, give_me_header::give_me_header, give_me_json::give_me_json,
@@ -16,6 +18,9 @@ use self::{
 };
 
 pub fn create_routes() -> Router {
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::PUT])
+        .allow_origin(tower_http::cors::Any);
     Router::new()
         .route("/", get(hello_world))
         .route("/give_me_back", post(give_me_back))
@@ -23,4 +28,5 @@ pub fn create_routes() -> Router {
         .route("/give_me_path/:learn", post(give_me_path))
         .route("/give_me_query", get(give_me_query))
         .route("/give_me_header", get(give_me_header))
+        .layer(cors)
 }
