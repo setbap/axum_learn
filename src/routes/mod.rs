@@ -1,4 +1,5 @@
 mod give_me_back;
+mod give_me_data;
 mod give_me_header;
 mod give_me_json;
 mod give_me_path;
@@ -8,19 +9,31 @@ mod hello_world;
 use axum::{
     http::Method,
     routing::{get, post},
-    Router,
+    Extension, Router,
 };
+use serde::Serialize;
 use tower_http::cors::CorsLayer;
 
 use self::{
-    give_me_back::give_me_back, give_me_header::give_me_header, give_me_json::give_me_json,
-    give_me_path::give_me_path, give_me_query::give_me_query, hello_world::hello_world,
+    give_me_back::give_me_back, give_me_data::give_me_data, give_me_header::give_me_header,
+    give_me_json::give_me_json, give_me_path::give_me_path, give_me_query::give_me_query,
+    hello_world::hello_world,
 };
+
+#[derive(Clone, Serialize)]
+pub struct SharedMessage {
+    pub msg: String,
+}
 
 pub fn create_routes() -> Router {
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::PUT])
         .allow_origin(tower_http::cors::Any);
+
+    let msg = SharedMessage {
+        msg: "hello".to_owned(),
+    };
+
     Router::new()
         .route("/", get(hello_world))
         .route("/give_me_back", post(give_me_back))
@@ -28,5 +41,7 @@ pub fn create_routes() -> Router {
         .route("/give_me_path/:learn", post(give_me_path))
         .route("/give_me_query", get(give_me_query))
         .route("/give_me_header", get(give_me_header))
+        .route("/give_me_data", get(give_me_data))
         .layer(cors)
+        .layer(Extension(msg))
 }
