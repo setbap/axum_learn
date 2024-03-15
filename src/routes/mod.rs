@@ -1,4 +1,5 @@
 mod give_me_back;
+mod give_me_header;
 mod give_me_json;
 mod give_me_path;
 mod give_me_query;
@@ -10,8 +11,8 @@ use axum::{
 };
 
 use self::{
-    give_me_back::give_me_back, give_me_json::give_me_json, give_me_path::give_me_path,
-    give_me_query::give_me_query, hello_world::hello_world,
+    give_me_back::give_me_back, give_me_header::give_me_header, give_me_json::give_me_json,
+    give_me_path::give_me_path, give_me_query::give_me_query, hello_world::hello_world,
 };
 
 pub fn create_routes() -> Router {
@@ -21,4 +22,5 @@ pub fn create_routes() -> Router {
         .route("/give_me_json", post(give_me_json))
         .route("/give_me_path/:learn", post(give_me_path))
         .route("/give_me_query", get(give_me_query))
+        .route("/give_me_header", get(give_me_header))
 }
